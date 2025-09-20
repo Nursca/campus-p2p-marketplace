@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Camera, Upload, X, Sparkles } from "lucide-react"
-import { useWallet } from "@/components/wallet/wallet-provider"
+import { useWallet } from "@solana/wallet-adapter-react"
 
 const categories = ["Textbooks", "Electronics", "Furniture", "Clothing", "Miscellaneous"]
 

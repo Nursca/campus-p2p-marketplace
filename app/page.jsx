@@ -3,7 +3,7 @@
 import { Header } from "@/components/layout/header"
 import { CreateListingModal } from "@/components/listing/create-listing-modal"
 import { ListingCard } from "@/components/listing/listing-card"
-import { useWallet } from "@/components/wallet/wallet-provider"
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -27,7 +27,7 @@ const mockListings = [
       name: "Sarah M.",
       reputation: 4.8,
     },
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    createdAt: "2024-06-01T10:00:00Z", // 2 hours ago
   },
   {
     id: 2,
@@ -44,7 +44,7 @@ const mockListings = [
       name: "Mike R.",
       reputation: 4.9,
     },
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+    createdAt: "2024-06-01T07:00:00Z", // 5 hours ago
   },
   {
     id: 3,
@@ -61,11 +61,11 @@ const mockListings = [
       name: "Alex K.",
       reputation: 4.7,
     },
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+    createdAt: "2024-05-31T12:00:00Z", // 1 day ago
   },
 ]
 
-export default function HomePage() {
+function HomePageContent() {
   const { connected } = useWallet()
 
   const categories = [
@@ -213,4 +213,8 @@ export default function HomePage() {
       </main>
     </div>
   )
+}
+
+export default function HomePage() {  
+  return <HomePageContent />
 }

@@ -1,7 +1,7 @@
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
-import { WalletProvider } from "@/components/wallet/wallet-provider"
+import WalletContextProvider from "../components/wallet/wallet-context-provider"
 import "./globals.css"
 import { Suspense } from "react"
 
@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Suspense fallback={<div>Loading...</div>}>
-          <WalletProvider>{children}</WalletProvider>
+          <WalletContextProvider>{children}</WalletContextProvider>
         </Suspense>
         <Analytics />
       </body>

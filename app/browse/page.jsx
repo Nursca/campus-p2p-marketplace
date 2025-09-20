@@ -30,7 +30,7 @@ const mockListings = [
       name: "Sarah M.",
       reputation: 4.8,
     },
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    createdAt: "2024-06-01T10:00:00Z",
     distance: 0.2,
   },
   {
@@ -48,7 +48,7 @@ const mockListings = [
       name: "Mike R.",
       reputation: 4.9,
     },
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    createdAt: "2024-06-01T07:00:00Z",
     distance: 0.5,
   },
   {
@@ -66,7 +66,7 @@ const mockListings = [
       name: "Alex K.",
       reputation: 4.7,
     },
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    createdAt: "2024-05-31T12:00:00Z",
     distance: 0.8,
   },
   {
@@ -84,7 +84,7 @@ const mockListings = [
       name: "Emma L.",
       reputation: 4.6,
     },
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    createdAt: "2024-05-31T15:00:00Z",
     distance: 1.2,
   },
   {
@@ -102,7 +102,7 @@ const mockListings = [
       name: "David P.",
       reputation: 4.5,
     },
-    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+    createdAt: "2024-05-30T09:00:00Z",
     distance: 0.3,
   },
   {
@@ -120,7 +120,7 @@ const mockListings = [
       name: "Lisa W.",
       reputation: 4.9,
     },
-    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
+    createdAt: "2024-05-29T18:00:00Z",
     distance: 0.4,
   },
 ]
@@ -375,7 +375,7 @@ export default function BrowsePage() {
               <div>
                 <h1 className="text-2xl font-bold">Browse Items</h1>
                 <p className="text-muted-foreground">
-                  {filteredListings.length} {filteredListings.length === 1 ? "item" : "items"} found
+                  {(filteredListings?.length ?? 0)} {(filteredListings?.length === 1 ? "item" : "items")} found
                 </p>
               </div>
             </div>
@@ -432,7 +432,7 @@ export default function BrowsePage() {
             )}
 
             {/* Listings Grid/List */}
-            {filteredListings.length === 0 ? (
+            {((filteredListings?.length ?? 0) === 0) ? (
               <div className="text-center py-12">
                 <div className="text-muted-foreground mb-4">
                   <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -447,7 +447,7 @@ export default function BrowsePage() {
               <div
                 className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}
               >
-                {filteredListings.map((listing) => (
+                {(filteredListings ?? []).map((listing) => (
                   <div key={listing.id} onClick={() => setSelectedItem(listing)}>
                     <ListingCard listing={listing} />
                   </div>
