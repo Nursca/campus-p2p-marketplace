@@ -4,9 +4,9 @@ import { Header } from "@/components/layout/header"
 import { CreateListingModal } from "@/components/listing/create-listing-modal"
 import { ListingCard } from "@/components/listing/listing-card"
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/payment/ui/button"
+import { Card, CardContent } from "@/components/payment/ui/card"
+import { Badge } from "@/components/payment/ui/badge"
 import { BookOpen, Smartphone, Laptop, ShoppingBag, TrendingUp, Users, Shield, Plus } from "lucide-react"
 import Link from "next/link"
 

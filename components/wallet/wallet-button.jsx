@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/payment/ui/button"
 import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { Wallet, LogOut, Copy, Check } from "lucide-react"
 import {
@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/payment/ui/dropdown-menu"
 import { WalletModal } from "@solana/wallet-adapter-react-ui"
 import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 
