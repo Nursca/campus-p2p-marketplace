@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/payment/ui/dialog"
-import { Button } from "@/components/payment/ui/button"
-import { Card, CardContent } from "@/components/payment/ui/card"
-import { Badge } from "@/components/payment/ui/badge"
-import { Separator } from "@/components/payment/ui/separator"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { QRCodeSVG } from "qrcode.react"
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
@@ -50,13 +50,27 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
   }
 
   const generatePaymentRequest = () => {
-    if (!item) return
+    if (!item || !connected) return
 
-    // Encode the URL for the API endpoint
-    const apiUrl = `${window.location.origin}/api/solanapay?item=${encodeURIComponent(JSON.stringify(item))}`
-    
-    // Create the Solana Pay URL
-    const solanaPayUrl = new URL(`solana:${apiUrl}`)
+    // Create Solana Pay URL
+    const amount = item.currency === "SOL" ? item.price : item.price // For demo, treating USDC as 1:1
+    const recipient = item.seller.address
+    const reference = PublicKey.unique().toString()
+    const label = `Campus Market - ${item.title}`
+    const message = `Purchase ${item.title} from Campus Market`
+
+    // Generate Solana Pay URL
+    const solanaPayUrl = new URL("solana:")
+    solanaPayUrl.searchParams.set("recipient", recipient)
+    solanaPayUrl.searchParams.set("amount", amount.toString())
+    solanaPayUrl.searchParams.set("reference", reference)
+    solanaPayUrl.searchParams.set("label", label)
+    solanaPayUrl.searchParams.set("message", message)
+
+    if (item.currency === "USDC") {
+      solanaPayUrl.searchParams.set("spl-token", USDC_MINT)
+    }
+
     setQrCodeUrl(solanaPayUrl.toString())
   }
 

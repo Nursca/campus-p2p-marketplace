@@ -1,9 +1,9 @@
 "use client"
 
-import { Card, CardContent } from "@/components/payment/ui/card"
-import { Badge } from "@/components/payment/ui/badge"
-import { Button } from "@/components/payment/ui/button"
-import { Avatar, AvatarFallback } from "@/components/payment/ui/avatar"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { MapPin, Clock, Heart } from "lucide-react"
 import { useState } from "react"
 

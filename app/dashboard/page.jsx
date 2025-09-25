@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/payment/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/payment/ui/card"
-import { Button } from "@/components/payment/ui/button"
-import { Badge } from "@/components/payment/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/payment/ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import TransactionHistory from "@/components/payment/transaction-history"
 import { ShoppingBag, DollarSign, Eye, Edit, Trash2, Heart, Star, Wallet, ExternalLink, Copy, Plus } from "lucide-react"
 
