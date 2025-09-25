@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Connection, PublicKey, SystemProgram, Transaction, clusterApiUrl } from '@solana/web3.js';
 import { findReference, FindReferenceError } from '@solana/pay';
+import { mockListings } from '@/lib/items';
 
 // Constants
 const SOLANA_NETWORK = 'devnet';
@@ -8,14 +9,17 @@ const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET || '8FBgLBFxJc
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const itemStr = searchParams.get('item');
+  const itemId = searchParams.get('itemId');
 
-  if (!itemStr) {
-    return NextResponse.json({ error: 'Item details not provided' }, { status: 400 });
+  if (!itemId) {
+    return NextResponse.json({ error: 'Item ID not provided' }, { status: 400 });
   }
 
   try {
-    const item = JSON.parse(decodeURIComponent(itemStr));
+    const item = mockListings.find((item) => item.id.toString() === itemId);
+    if (!item) {
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+    }
     const label = `Campus Market - ${item.title}`;
     const icon = 'https://exiled-bot.vercel.app/logo.png'; // Replace with your actual icon URL
 
@@ -33,19 +37,36 @@ export async function GET(req) {
 
 export async function POST(req) {
   const { searchParams } = new URL(req.url);
-  const itemStr = searchParams.get('item');
+  const itemId = searchParams.get('itemId');
   const { account } = await req.json();
 
-  if (!itemStr || !account) {
+  if (!itemId || !account) {
     return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
   }
 
   try {
-    const item = JSON.parse(decodeURIComponent(itemStr));
+    const item = mockListings.find((item) => item.id.toString() === itemId);
+    if (!item) {
+      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+    }
     const buyerPublicKey = new PublicKey(account);
     const reference = new PublicKey(item.id); // Using item ID as reference for simplicity
 
     const connection = new Connection(clusterApiUrl(SOLANA_NETWORK));
+
+    // Ensure the transaction has not already been paid
+    try {
+        await findReference(connection, reference);
+        return NextResponse.json({ error: 'Transaction already paid' }, { status: 400 });
+    } catch (error) {
+        if (error instanceof FindReferenceError) {
+            // This is expected if the reference is not found
+        } else {
+            console.error(error);
+            return NextResponse.json({ error: 'Error checking transaction status' }, { status: 500 });
+        }
+    }
+
     const { blockhash } = await connection.getLatestBlockhash();
 
     const transaction = new Transaction({

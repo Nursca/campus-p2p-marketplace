@@ -53,7 +53,7 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
     if (!item) return
 
     // Encode the URL for the API endpoint
-    const apiUrl = `${window.location.origin}/api/solanapay?item=${encodeURIComponent(JSON.stringify(item))}`
+    const apiUrl = `${window.location.origin}/api/solanapay?itemId=${item.id}`
     
     // Create the Solana Pay URL
     const solanaPayUrl = new URL(`solana:${apiUrl}`)
