@@ -41,6 +41,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.39",
     "@solana/wallet-adapter-walletconnect": "^0.1.21",
     "@solana/wallet-adapter-wallets": "^0.19.37",
+    "@solana/pay": "^0.2.6",
     "@solana/web3.js": "^1.98.4",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.20",
