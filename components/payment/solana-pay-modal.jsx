@@ -10,8 +10,7 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import { QRCodeSVG } from "qrcode.react"
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { CheckCircle, Clock, AlertCircle, Copy, Check, Smartphone, Monitor } from "lucide-react"
-
-const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" // USDC mint address
+import { USDC_MINT } from "@/lib/constants"
 
 export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) {
   const { connected, publicKey, connection, wallet } = useWallet()
@@ -52,6 +51,10 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
   const generatePaymentRequest = () => {
     if (!item || !connected) return
 
+    // Determine network and select appropriate USDC mint
+    const isDevnet = connection.rpcEndpoint.includes("devnet")
+    const usdcMint = isDevnet ? USDC_MINT.devnet : USDC_MINT["mainnet-beta"]
+
     // Create Solana Pay URL
     const amount = item.currency === "SOL" ? item.price : item.price // For demo, treating USDC as 1:1
     const recipient = item.seller.address
@@ -68,7 +71,7 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
     solanaPayUrl.searchParams.set("message", message)
 
     if (item.currency === "USDC") {
-      solanaPayUrl.searchParams.set("spl-token", USDC_MINT)
+      solanaPayUrl.searchParams.set("spl-token", usdcMint.toBase58())
     }
 
     setQrCodeUrl(solanaPayUrl.toString())
