@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Search, SlidersHorizontal, Grid, List } from "lucide-react"
+import { Search, SlidersHorizontal, Grid, List, ShoppingCart } from "lucide-react"
 
 // Extended mock data (fallback for distances, categories meta)
 const mockListings = [
@@ -146,6 +146,7 @@ const sortOptions = [
   { value: "distance", label: "Distance" },
 ]
 
+
 export default function BrowsePage() {
   const { listings: listingsFromCtx } = useListings()
   const base = listingsFromCtx.length ? listingsFromCtx : mockListings
@@ -153,6 +154,8 @@ export default function BrowsePage() {
   const [filteredListings, setFilteredListings] = useState(base)
   const [selectedItem, setSelectedItem] = useState(null)
   const [viewMode, setViewMode] = useState("grid")
+  const [cart, setCart] = useState([])
+  const [showCartNotification, setShowCartNotification] = useState(false)
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -221,6 +224,33 @@ export default function BrowsePage() {
     setFilteredListings(filtered)
   }, [listings, searchQuery, selectedCategory, selectedCondition, selectedLocation, priceRange, sortBy])
 
+  // Cart functions
+  const addToCart = (item) => {
+    const existingItem = cart.find(cartItem => cartItem.id === item.id)
+    
+    if (existingItem) {
+      setCart(cart.map(cartItem => 
+        cartItem.id === item.id 
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      ))
+    } else {
+      setCart([...cart, {
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        currency: item.currency,
+        quantity: 1,
+        image: item.images[0],
+        seller: item.seller
+      }])
+    }
+    
+    // Show notification
+    setShowCartNotification(true)
+    setTimeout(() => setShowCartNotification(false), 3000)
+  }
+
   const clearFilters = () => {
     setSearchQuery("")
     setSelectedCategory("All")
@@ -230,9 +260,19 @@ export default function BrowsePage() {
     setSortBy("newest")
   }
 
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
+
+      {/* Cart Notification */}
+      {showCartNotification && (
+        <div className="fixed top-20 right-4 z-50 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg flex items-center gap-2">
+          <ShoppingCart className="w-4 h-4" />
+          <span>Item added to cart!</span>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-6">
         {/* Search and View Toggle */}
@@ -271,6 +311,16 @@ export default function BrowsePage() {
                 <List className="w-4 h-4" />
               </Button>
             </div>
+            {/* Cart Button */}
+            <Button variant="outline" className="relative bg-transparent">
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Cart
+              {cartItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </Button>
           </div>
         </div>
 
@@ -467,14 +517,14 @@ export default function BrowsePage() {
         </div>
       </div>
 
-      {/* Item Detail Modal */}
       {selectedItem && (
-        <ItemDetailModal
-          item={selectedItem}
-          open={!!selectedItem}
-          onOpenChange={(open) => !open && setSelectedItem(null)}
-        />
-      )}
+  <ItemDetailModal
+    item={selectedItem}
+    open={!!selectedItem}
+    onOpenChange={(open) => !open && setSelectedItem(null)}
+    onAddToCart={() => addToCart(selectedItem)}
+  />
+)}
     </div>
   )
 }

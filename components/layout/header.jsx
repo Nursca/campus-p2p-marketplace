@@ -3,16 +3,28 @@
 import { WalletButton } from "@/components/wallet/wallet-button"
 import { CreateListingModal } from "@/components/listing/create-listing-modal"
 import MessageNotifications from "@/components/chat/message-notifications"
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export function Header() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
+  const [cartItemsCount, setCartItemsCount] = useState(0)
+
+  // Mock cart items count - replace with your actual cart logic
+  useEffect(() => {
+    // This would typically come from a cart context, localStorage, or API
+    const mockCartItems = [
+      { id: 1, quantity: 1 },
+      { id: 2, quantity: 1 }
+    ]
+    const count = mockCartItems.reduce((total, item) => total + item.quantity, 0)
+    setCartItemsCount(count)
+  }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -48,13 +60,24 @@ export function Header() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <CreateListingModal>
             <Button variant="outline" size="sm" className="hidden sm:flex bg-transparent">
               <Plus className="w-4 h-4 mr-2" />
               Sell Item
             </Button>
           </CreateListingModal>
+          
+          {/* Cart Icon */}
+          <Link href="/cart" className="relative flex items-center p-2 hover:bg-muted/50 rounded-lg transition-colors">
+            <ShoppingCart className="w-5 h-5" />
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
+              </span>
+            )}
+          </Link>
+          
           <MessageNotifications />
           <WalletButton />
         </div>
