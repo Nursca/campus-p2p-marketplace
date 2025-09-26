@@ -9,9 +9,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { SolanaPayModal } from "@/components/payment/solana-pay-modal"
 import ChatModal from "@/components/chat/chat-modal"
-import { MapPin, Clock, Heart, MessageCircle, Star, ChevronLeft, ChevronRight } from "lucide-react"
+import { MapPin, Clock, Heart, MessageCircle, Star, ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react"
 
-export function ItemDetailModal({ item, open, onOpenChange }) {
+export function ItemDetailModal({ item, open, onOpenChange, onAddToCart }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isFavorited, setIsFavorited] = useState(false)
   const [showPayment, setShowPayment] = useState(false)
@@ -52,6 +52,12 @@ export function ItemDetailModal({ item, open, onOpenChange }) {
     console.log("Payment completed:", paymentData)
     setShowPayment(false)
     alert("Payment successful! The seller has been notified.")
+  }
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart()
+    }
   }
 
   const similarItems = [
@@ -206,6 +212,18 @@ export function ItemDetailModal({ item, open, onOpenChange }) {
                 >
                   Buy Now - ${item.price} {item.currency}
                 </Button>
+                
+                {/* Add to Cart Button */}
+                <Button 
+                  variant="outline" 
+                  className="w-full bg-transparent border-primary text-primary hover:bg-primary/10" 
+                  size="lg" 
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Add to Cart
+                </Button>
+                
                 <Button variant="outline" className="w-full bg-transparent" size="lg" onClick={() => setShowChat(true)}>
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Message Seller
