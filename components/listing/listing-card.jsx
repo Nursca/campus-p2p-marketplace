@@ -41,7 +41,7 @@ export function ListingCard({ listing }) {
         <img
           src={listing.images[0] || "/placeholder.svg?height=200&width=300&query=textbook"}
           alt={listing.title}
-          className="w-full h-48 object-cover rounded-t-lg"
+          className="w-full h-36 md:h-48 object-cover rounded-t-lg"
         />
         <Button
           variant="ghost"
@@ -61,16 +61,16 @@ export function ListingCard({ listing }) {
         </div>
       </div>
 
-      <CardContent className="p-4">
+      <CardContent className="p-3 md:p-4">
         <div className="space-y-3">
           {/* Price */}
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-primary">${formatPrice(listing.price, listing.currency)}</span>
+            <span className="text-xl md:text-2xl font-bold text-primary">${formatPrice(listing.price, listing.currency)}</span>
             <Badge variant="outline">{listing.category}</Badge>
           </div>
 
           {/* Title */}
-          <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="font-semibold text-base md:text-lg line-clamp-2 group-hover:text-primary transition-colors">
             {listing.title}
           </h3>
 
@@ -101,7 +101,7 @@ export function ListingCard({ listing }) {
                 </Badge>
               )}
             </div>
-            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 md:size-sm size-xs">
               View
             </Button>
           </div>

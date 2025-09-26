@@ -111,7 +111,7 @@ function HomePageContent() {
                 <Button variant="outline">View All</Button>
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {(listings.length ? listings : mockListings).slice(0, 6).map((listing) => (
                 <ListingCard key={listing.id} listing={listing} />
               ))}

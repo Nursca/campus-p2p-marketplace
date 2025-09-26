@@ -80,7 +80,7 @@ export default function MessageNotifications() {
 
       {/* Notifications Dropdown */}
       {showNotifications && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
+        <div className="sm:absolute sm:right-0 sm:top-full sm:mt-2 sm:w-80 fixed left-3 right-3 top-16 w-auto bg-white border border-gray-200 rounded-xl shadow-lg z-50 sm:z-50">
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-gray-900">Notifications</h3>
@@ -92,7 +92,7 @@ export default function MessageNotifications() {
             </div>
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center">
                 <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
