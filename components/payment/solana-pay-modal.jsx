@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useWallet } from "@solana/wallet-adapter-react"
+import { useWallet, useConnection } from "@solana/wallet-adapter-react"
 import { QRCodeSVG } from "qrcode.react"
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { CheckCircle, Clock, AlertCircle, Copy, Check, Smartphone, Monitor } from "lucide-react"
-import { USDC_MINT } from "@/lib/constants"
+
+const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" // USDC mint address
 
 export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) {
-  const { connected, publicKey, connection, wallet } = useWallet()
+  const { connection } = useConnection()
+  const { connected, publicKey, wallet } = useWallet()
   const [paymentStatus, setPaymentStatus] = useState("pending") // pending, processing, completed, failed
   const [qrCodeUrl, setQrCodeUrl] = useState("")
   const [transactionSignature, setTransactionSignature] = useState("")
@@ -49,36 +51,18 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
   }
 
   const generatePaymentRequest = () => {
-    if (!item || !connected) return
+    if (!item) return
 
-    // Determine network and select appropriate USDC mint
-    const isDevnet = connection.rpcEndpoint.includes("devnet")
-    const usdcMint = isDevnet ? USDC_MINT.devnet : USDC_MINT["mainnet-beta"]
-
-    // Create Solana Pay URL
-    const amount = item.currency === "SOL" ? item.price : item.price // For demo, treating USDC as 1:1
-    const recipient = item.seller.address
-    const reference = PublicKey.unique().toString()
-    const label = `Campus Market - ${item.title}`
-    const message = `Purchase ${item.title} from Campus Market`
-
-    // Generate Solana Pay URL
-    const solanaPayUrl = new URL("solana:")
-    solanaPayUrl.searchParams.set("recipient", recipient)
-    solanaPayUrl.searchParams.set("amount", amount.toString())
-    solanaPayUrl.searchParams.set("reference", reference)
-    solanaPayUrl.searchParams.set("label", label)
-    solanaPayUrl.searchParams.set("message", message)
-
-    if (item.currency === "USDC") {
-      solanaPayUrl.searchParams.set("spl-token", usdcMint.toBase58())
-    }
-
+    // Encode the URL for the API endpoint
+    const apiUrl = `${window.location.origin}/api/solanapay?itemId=${item.id}`
+    
+    // Create the Solana Pay URL
+    const solanaPayUrl = new URL(`solana:${apiUrl}`)
     setQrCodeUrl(solanaPayUrl.toString())
   }
 
   const processDesktopPayment = async () => {
-    if (!connected || !wallet || !item) return
+    if (!connected || !wallet || !item || !connection) return
 
     setPaymentStatus("processing")
 
@@ -96,10 +80,11 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
         })
         transaction.add(transferInstruction)
       } else {
-        // For USDC, we'd need to use Token Program
-        // This is a simplified version - in production you'd use @solana/spl-token
-        console.log("USDC transfers require SPL Token Program implementation")
-        throw new Error("USDC transfers not implemented in this demo")
+        // For USDC, desktop direct transfer isn't implemented in this demo
+        console.warn("USDC desktop transfers require SPL Token Program; switching to mobile/QR flow")
+        setPaymentMethod("mobile")
+        setPaymentStatus("pending")
+        return
       }
 
       // Get recent blockhash
@@ -270,11 +255,14 @@ export function SolanaPayModal({ item, open, onOpenChange, onPaymentComplete }) 
                 <div className="text-center space-y-4">
                   <div className="p-6 border-2 border-dashed border-muted rounded-lg">
                     <Monitor className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-4">Pay directly from your connected wallet</p>
+                    <p className="text-sm text-muted-foreground mb-2">Pay directly from your connected wallet</p>
+                    {item.currency !== "SOL" && (
+                      <p className="text-xs text-muted-foreground mb-2">Desktop payments currently support SOL only. Use Mobile/QR for USDC.</p>
+                    )}
                     <Button
                       onClick={processDesktopPayment}
                       className="bg-primary text-primary-foreground hover:bg-primary/90"
-                      disabled={!connected}
+                      disabled={!connected || item.currency !== "SOL"}
                     >
                       Pay ${item.price} {item.currency}
                     </Button>

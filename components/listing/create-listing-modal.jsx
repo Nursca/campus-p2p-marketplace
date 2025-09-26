@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { Camera, Upload, X, Sparkles } from "lucide-react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { useListings } from "@/components/listing/ListingsContext"
 
 const categories = ["Textbooks", "Electronics", "Furniture", "Clothing", "Miscellaneous"]
 
@@ -34,6 +35,7 @@ const campusLocations = [
 
 export function CreateListingModal({ children }) {
   const { connected, publicKey } = useWallet()
+  const { addListing } = useListings()
   const [open, setOpen] = useState(false)
   const [images, setImages] = useState([])
   const [formData, setFormData] = useState({
@@ -48,6 +50,7 @@ export function CreateListingModal({ children }) {
   })
   const [suggestedPrice, setSuggestedPrice] = useState(null)
   const [isGeneratingPrice, setIsGeneratingPrice] = useState(false)
+  const [solPriceUsd, setSolPriceUsd] = useState(null)
   const fileInputRef = useRef(null)
   const cameraInputRef = useRef(null)
 
@@ -78,6 +81,21 @@ export function CreateListingModal({ children }) {
     setImages((prev) => prev.filter((img) => img.id !== id))
   }
 
+  const fetchSolPrice = async () => {
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
+      )
+      const json = await res.json()
+      const price = json?.solana?.usd
+      if (typeof price === "number") setSolPriceUsd(price)
+      return price
+    } catch (e) {
+      console.warn("Failed to fetch SOL price:", e)
+      return null
+    }
+  }
+
   const generatePriceSuggestion = async () => {
     if (!formData.title || !formData.category || !formData.condition) {
       alert("Please fill in title, category, and condition first")
@@ -87,8 +105,8 @@ export function CreateListingModal({ children }) {
     setIsGeneratingPrice(true)
 
     // Simulate AI price suggestion
-    setTimeout(() => {
-      const basePrice =
+    setTimeout(async () => {
+      const basePriceUsd =
         formData.category === "Textbooks"
           ? 45
           : formData.category === "Electronics"
@@ -106,19 +124,44 @@ export function CreateListingModal({ children }) {
           poor: 0.3,
         }[formData.condition] || 0.7
 
-      const suggested = Math.round(basePrice * conditionMultiplier)
-      const range = {
-        min: Math.round(suggested * 0.8),
-        max: Math.round(suggested * 1.2),
+      const suggestedUsd = Math.round(basePriceUsd * conditionMultiplier)
+      const rangeUsd = {
+        min: Math.round(suggestedUsd * 0.8),
+        max: Math.round(suggestedUsd * 1.2),
       }
 
-      setSuggestedPrice({
-        suggested,
-        range,
-        reasoning: `Similar ${formData.category.toLowerCase()} in ${formData.condition} condition typically sell for $${range.min}-$${range.max}`,
-      })
+      if (formData.currency === "SOL") {
+        const price = solPriceUsd ?? (await fetchSolPrice())
+        if (price) {
+          const suggestedSol = Number((suggestedUsd / price).toFixed(4))
+          const rangeSol = {
+            min: Number((rangeUsd.min / price).toFixed(4)),
+            max: Number((rangeUsd.max / price).toFixed(4)),
+          }
+          setSuggestedPrice({
+            suggested: suggestedSol,
+            range: rangeSol,
+            currency: "SOL",
+            reasoning: `Similar ${formData.category.toLowerCase()} in ${formData.condition} condition typically sell for ${rangeSol.min}-${rangeSol.max} SOL (at ~$${price}/SOL)`,
+          })
+        } else {
+          setSuggestedPrice({
+            suggested: suggestedUsd,
+            range: rangeUsd,
+            currency: "USDC",
+            reasoning: `Could not fetch SOL price. USD estimate: $${rangeUsd.min}-$${rangeUsd.max}`,
+          })
+        }
+      } else {
+        setSuggestedPrice({
+          suggested: suggestedUsd,
+          range: rangeUsd,
+          currency: "USDC",
+          reasoning: `Similar ${formData.category.toLowerCase()} in ${formData.condition} condition typically sell for $${rangeUsd.min}-$${rangeUsd.max}`,
+        })
+      }
       setIsGeneratingPrice(false)
-    }, 2000)
+    }, 1200)
   }
 
   const handleSubmit = (e) => {
@@ -128,8 +171,23 @@ export function CreateListingModal({ children }) {
       return
     }
 
-    // Here you would typically submit to your backend
-    console.log("Listing data:", { formData, images, seller: publicKey.toString() })
+    const newListing = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      condition: formData.condition,
+      price: Number(formData.price),
+      currency: formData.currency,
+      location: formData.location,
+      images: images.length ? images.map((i) => i.url) : ["/placeholder.jpg"],
+      seller: {
+        address: publicKey.toString(),
+        name: "You",
+        reputation: 5.0,
+      },
+    }
+
+    addListing(newListing)
     alert("Listing created successfully!")
     setOpen(false)
 
@@ -319,17 +377,19 @@ export function CreateListingModal({ children }) {
             {suggestedPrice && (
               <Card className="bg-accent/50">
                 <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="font-medium">Suggested Price: ${suggestedPrice.suggested}</span>
-                  </div>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="font-medium">
+                Suggested Price: {suggestedPrice.currency === "SOL" ? `${suggestedPrice.suggested} SOL` : `$${suggestedPrice.suggested}`}
+              </span>
+            </div>
                   <p className="text-sm text-muted-foreground">{suggestedPrice.reasoning}</p>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     className="mt-2 bg-transparent"
-                    onClick={() => setFormData((prev) => ({ ...prev, price: suggestedPrice.suggested.toString() }))}
+                    onClick={() => setFormData((prev) => ({ ...prev, price: suggestedPrice.suggested.toString(), currency: suggestedPrice.currency || prev.currency }))}
                   >
                     Use This Price
                   </Button>

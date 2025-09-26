@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useListings } from "@/components/listing/ListingsContext"
 import { Header } from "@/components/layout/header"
 import { ListingCard } from "@/components/listing/listing-card"
 import { ItemDetailModal } from "@/components/listing/item-detail-modal"
@@ -13,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Search, SlidersHorizontal, Grid, List } from "lucide-react"
 
-// Extended mock data
+// Extended mock data (fallback for distances, categories meta)
 const mockListings = [
   {
     id: 1,
@@ -146,8 +147,10 @@ const sortOptions = [
 ]
 
 export default function BrowsePage() {
-  const [listings, setListings] = useState(mockListings)
-  const [filteredListings, setFilteredListings] = useState(mockListings)
+  const { listings: listingsFromCtx } = useListings()
+  const base = listingsFromCtx.length ? listingsFromCtx : mockListings
+  const [listings, setListings] = useState(base)
+  const [filteredListings, setFilteredListings] = useState(base)
   const [selectedItem, setSelectedItem] = useState(null)
   const [viewMode, setViewMode] = useState("grid")
 
@@ -159,6 +162,12 @@ export default function BrowsePage() {
   const [priceRange, setPriceRange] = useState([0, 1000])
   const [sortBy, setSortBy] = useState("newest")
   const [showFilters, setShowFilters] = useState(false)
+
+  // Keep local lists in sync with context listings
+  useEffect(() => {
+    const next = listingsFromCtx.length ? listingsFromCtx : mockListings
+    setListings(next)
+  }, [listingsFromCtx])
 
   // Apply filters
   useEffect(() => {
