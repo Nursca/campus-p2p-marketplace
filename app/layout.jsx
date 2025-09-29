@@ -5,6 +5,7 @@ import WalletContextProvider from "../components/wallet/wallet-context-provider"
 import { ListingsProvider } from "@/components/listing/ListingsContext"
 import { CartProvider } from "@/components/cart/CartContext" // Import CartProvider
 import "./globals.css"
+import "./wallet.css"
 import { Suspense } from "react"
 
 export const metadata = {

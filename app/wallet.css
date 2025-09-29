@@ -1,0 +1,181 @@
+/*
+  Solana Wallet Adapter UI overrides
+  - Tweak the CSS variables below to theme colors, radius, spacing, fonts
+  - Styles target the official wallet adapter class names
+*/
+
+:root {
+  /* Colors mapped to app/globals.css design tokens */
+  --wallet-bg: var(--background);
+  --wallet-bg-elev: var(--card);
+  --wallet-fg: var(--foreground);
+  --wallet-muted: var(--muted-foreground);
+  --wallet-primary: var(--primary);
+  --wallet-primary-foreground: var(--primary-foreground);
+  --wallet-primary-hover: color-mix(in oklch, var(--primary), black 10%);
+  --wallet-border: var(--border);
+
+  /* Radius mapped to your radius scale */
+  --wallet-radius: var(--radius-xl);
+  --wallet-radius-sm: var(--radius-lg);
+
+  /* Elevation and focus, tuned for light/dark automatically */
+  --wallet-shadow: 0 10px 30px color-mix(in oklch, var(--foreground), transparent 92%);
+  --wallet-focus: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 70%);
+
+  /* Fonts from theme provider (Geist Sans/Mono) */
+  --wallet-font: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Optional wrapper class used by our button component */
+.wallet-button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--wallet-primary);
+  color: var(--wallet-primary-foreground);
+  border-radius: var(--wallet-radius-sm);
+  box-shadow: var(--wallet-shadow);
+  cursor: pointer;
+  font-family: var(--wallet-font);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wallet-button:hover {
+  background: var(--wallet-primary-hover);
+  transform: translateY(-1px);
+}
+
+.wallet-button:focus-visible {
+  outline: none;
+  box-shadow: var(--wallet-focus), var(--wallet-shadow);
+}
+
+.wallet-button:active {
+  transform: translateY(0);
+}
+
+/* Wallet Adapter: core button */
+.wallet-adapter-button,
+.wallet-adapter-button-trigger {
+  background: var(--wallet-primary) !important;
+  color: var(--wallet-primary-foreground) !important;
+  border: 1px solid var(--wallet-border) !important;
+  border-radius: var(--wallet-radius-sm) !important;
+  box-shadow: var(--wallet-shadow) !important;
+  font-family: var(--wallet-font) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  padding: 10px 16px !important;
+  gap: 10px !important;
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease !important;
+}
+
+.wallet-adapter-button:not([disabled]):hover,
+.wallet-adapter-button-trigger:not([disabled]):hover {
+  background: var(--wallet-primary-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+.wallet-adapter-button[disabled] {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.wallet-adapter-button:focus-visible,
+.wallet-adapter-button-trigger:focus-visible {
+  outline: none !important;
+  box-shadow: var(--wallet-focus), var(--wallet-shadow) !important;
+}
+
+/* Wallet Adapter: dropdown (connected state) */
+.wallet-adapter-dropdown {
+  position: relative;
+}
+
+.wallet-adapter-dropdown-list {
+  background: var(--wallet-bg-elev) !important;
+  border: 1px solid var(--wallet-border) !important;
+  border-radius: var(--wallet-radius) !important;
+  box-shadow: var(--wallet-shadow) !important;
+  overflow: hidden;
+}
+
+.wallet-adapter-dropdown-list-item {
+  color: var(--wallet-fg) !important;
+  font-family: var(--wallet-font) !important;
+}
+
+.wallet-adapter-dropdown-list-item:hover {
+  background: rgba(124, 58, 237, 0.12) !important;
+}
+
+/* Wallet Adapter: modal */
+.wallet-adapter-modal-wrapper,
+.wallet-adapter-modal {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: saturate(120%) blur(6px);
+}
+
+.wallet-adapter-modal-container {
+  background: var(--wallet-bg) !important;
+  color: var(--wallet-fg) !important;
+  border: 1px solid var(--wallet-border) !important;
+  border-radius: var(--wallet-radius) !important;
+  box-shadow: var(--wallet-shadow) !important;
+}
+
+.wallet-adapter-modal-title {
+  font-family: var(--wallet-font) !important;
+  font-weight: 700 !important;
+  color: var(--wallet-fg) !important;
+}
+
+.wallet-adapter-modal-button-close {
+  color: var(--wallet-muted) !important;
+  border-radius: 999px !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  color: var(--wallet-fg) !important;
+  background: rgba(124, 58, 237, 0.12) !important;
+}
+
+.wallet-adapter-modal-middle {
+  border-top: 1px solid var(--wallet-border) !important;
+  border-bottom: 1px solid var(--wallet-border) !important;
+}
+
+.wallet-adapter-modal-list {
+  gap: 8px !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button {
+  background: var(--wallet-bg-elev) !important;
+  color: var(--wallet-fg) !important;
+  border: 1px solid var(--wallet-border) !important;
+  border-radius: var(--wallet-radius-sm) !important;
+  box-shadow: none !important;
+  justify-content: flex-start !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background: rgba(124, 58, 237, 0.12) !important;
+  transform: none !important;
+}
+
+/* Wallet icons and text alignment */
+.wallet-adapter-button-start-icon,
+.wallet-adapter-button-end-icon {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon {
+  width: 28px !important;
+  height: 28px !important;
+}

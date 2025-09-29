@@ -4,17 +4,20 @@ import { Header } from "@/components/layout/header"
 import { CreateListingModal } from "@/components/listing/create-listing-modal"
 import { ListingCard } from "@/components/listing/listing-card"
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BookOpen, Smartphone, Laptop, ShoppingBag, TrendingUp, Users, Shield, Plus } from "lucide-react"
 import Link from "next/link"
+import { WalletButton } from "@/components/wallet/wallet-button"
 
 import { mockListings} from"@/lib/items"
 import { useListings } from "@/components/listing/ListingsContext"
 
 function HomePageContent() {
   const { connected } = useWallet()
+  const { setVisible: setWalletModalVisible } = useWalletModal()
   const { listings } = useListings()
 
   const categories = [
@@ -60,7 +63,11 @@ function HomePageContent() {
 
           {!connected ? (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => setWalletModalVisible(true)}
+              >
                 Get Started
               </Button>
               <Button variant="outline" size="lg">
@@ -140,9 +147,9 @@ function HomePageContent() {
           <h2 className="text-2xl font-bold mb-4">Ready to Start Trading?</h2>
           <p className="text-muted-foreground mb-6">Join thousands of students already using Campus Market</p>
           {!connected ? (
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              Connect Your Wallet
-            </Button>
+            <div className="flex justify-center">
+              <WalletButton />
+            </div>
           ) : (
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/browse">
